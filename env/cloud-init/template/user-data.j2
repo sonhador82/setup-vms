@@ -1,0 +1,7 @@
+#cloud-config
+password: 123456
+chpasswd: { expire: False }
+ssh_pwauth: True
+
+ssh_authorized_keys:
+ - {{ _tmp_sshkey.stdout | trim }}

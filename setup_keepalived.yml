@@ -1,0 +1,21 @@
+---
+- hosts: lbs
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+
+  vars:
+    _vip_iface: ens3
+
+  tasks:
+    - name: install keepalived
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - keepalived
+
+    - name: prep keepalived conf
+      template:
+        src: "{{ playbook_dir }}/config/keepalived.conf.j2"
+        dest: /etc/keepalived/keepalived.conf

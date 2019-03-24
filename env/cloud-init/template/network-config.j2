@@ -1,0 +1,9 @@
+version: 1
+config: 
+  - type: physical
+    name: {{ _nodes_iface }}
+    subnets:
+      - type: dhcp
+      - type: static
+        address: {{ item.ip }}/{{ _nodes_ipprefix }}
+        gateway: {{ _nodes_gateway }}

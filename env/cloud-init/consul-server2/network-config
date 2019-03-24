@@ -1,0 +1,9 @@
+version: 1
+config: 
+  - type: physical
+    name: ens3
+    subnets:
+      - type: dhcp
+      - type: static
+        address: 10.0.1.12/24
+        gateway: 10.0.1.40

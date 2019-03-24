@@ -1,0 +1,92 @@
+---
+- hosts: consul-servers
+  gather_facts: yes
+  remote_user: ubuntu
+  become: yes
+
+  vars:
+    _consul_url: https://releases.hashicorp.com/consul/1.4.4/consul_1.4.4_linux_amd64.zip
+
+  tasks:
+    - name: setup consul user
+      group:
+        name: consul
+        system: yes
+
+    - user:
+        name: consul
+        shell: /sbin/nologin
+        group: consul
+        system: yes
+
+    - name: get consul
+      get_url:
+        dest: "{{ playbook_dir }}/tmp/consul.zip"
+        url: "{{ _consul_url }}"
+      delegate_to: 127.0.0.1
+      become: no
+      run_once: yes
+
+    - file:
+        dest: "{{ item }}"
+        state: directory
+      with_items:
+        - /opt/bin
+
+    - file:
+        dest: "{{ item }}"
+        state: directory
+        owner: consul
+        group: consul
+        mode: 0775
+      with_items:
+        - /var/lib/consul
+        - /etc/consul.d
+
+    - unarchive:
+        src: "{{ playbook_dir }}/tmp/consul.zip"
+        dest: /opt/bin
+
+    - name: prep consul config
+      template:
+        src: "{{ playbook_dir }}/config/consul_template.json.j2"
+        dest: /etc/consul.d/consul.json
+#
+#
+#
+#/etc/systemd/system/consul.service
+#
+#[Unit]
+#Description=Consul Service Discovery Agent
+#Documentation=https://www.consul.io/
+#After=network-online.target
+#Wants=network-online.target
+#
+#[Service]
+#Type=simple
+#User=consul
+#Group=consul
+#ExecStart=/usr/local/bin/consul agent -server -ui \
+#	-advertise=192.168.18.40 \
+#	-bind=192.168.18.40 \
+#	-data-dir=/var/lib/consul \
+#	-node=consul-01 \
+#	-config-dir=/etc/consul.d
+#
+#ExecReload=/bin/kill -HUP $MAINPID
+#KillSignal=SIGINT
+#TimeoutStopSec=5
+#Restart=on-failure
+#SyslogIdentifier=consul
+#
+#[Install]
+#WantedBy=multi-user.target
+#
+#
+#https://computingforgeeks.com/how-to-install-consul-cluster-18-04-lts/
+#
+#https://gist.github.com/yunano/c27eb679a29ab70178ca
+# Run the following:
+# -m pkttype --pkt-type multicast
+#https://www.consul.io/docs/install/ports.html
+

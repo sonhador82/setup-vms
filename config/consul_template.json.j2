@@ -1,0 +1,14 @@
+{
+  "datacenter": "test-dc",
+  "data_dir": "/var/lib/consul",
+  "log_level": "INFO",
+  "node_name": "{{ ansible_nodename }}",
+  "server": true,
+  "bootstrap_expect": 3,
+  "bind_addr": "0.0.0.0",
+  "ui": true,
+  "retry_join": ["consul-server0.local", "consul-server1.local", "consul-server2.local"],
+  "addresses": {
+    "http": "0.0.0.0"
+  }
+}

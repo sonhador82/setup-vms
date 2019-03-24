@@ -1,0 +1,53 @@
+---
+- hosts: lbs
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+
+  vars:
+    _user: admin
+    _password: 1235813
+
+  tasks:
+    - name: prep nginx + keepalived
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - nginx
+
+    - name: setup ssl certificates
+      command: |
+        /usr/bin/openssl req -nodes -newkey rsa:2048 -new -x509 -days 365
+          -subj "/C=NL/ST=NW/L=WONDERLAND/O=FANTASY/OU=ADMINS/CN=nginx.local"
+          -out "{{ playbook_dir }}/tmp/nginx.crt"
+          -keyout "{{ playbook_dir }}/tmp/nginx.key"
+      delegate_to: 127.0.0.1
+      become: no
+
+    - file:
+        dest: /etc/nginx/ssl
+        state: directory
+
+    - copy:
+        src: "{{ item }}"
+        dest: /etc/nginx/ssl
+      with_items:
+        - "{{ playbook_dir }}/tmp/nginx.crt"
+        - "{{ playbook_dir }}/tmp/nginx.key"
+
+    - name: setup nginx config + auth
+      command: |
+        /usr/bin/openssl passwd -crypt {{ _password }}
+      register: _password_hash
+      delegate_to: 127.0.0.1
+      become: no
+
+    - copy:
+       dest: /etc/nginx/htpasswd
+       content: |
+         {{ _user }}:{{ _password_hash.stdout | trim }}
+
+    - copy:
+        src: config/nginx.conf
+        dest: /etc/nginx/nginx.conf

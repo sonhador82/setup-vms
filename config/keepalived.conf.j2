@@ -1,0 +1,31 @@
+vrrp_instance VRRP_1 {
+  state {{ ip1_role|upper }}
+  interface {{ _vip_iface }}
+  priority {% if ip1_role == "master" %}100{% else %}50{% endif %}
+
+  virtual_router_id 1
+  authentication {
+    auth_type PASS
+    auth_pass 1234
+  }
+
+  virtual_ipaddress {
+    10.0.0.1/24 dev {{ _vip_iface }}
+  } 
+}
+
+vrrp_instance VRRP_2 {
+  state {{ ip2_role|upper }}
+  interface {{ _vip_iface }}
+  priority {% if ip2_role == "master" %}100{% else %}50{% endif %}
+
+  virtual_router_id 2
+  authentication {
+    auth_type PASS
+    auth_pass 4321
+  }
+
+  virtual_ipaddress {
+    10.0.0.2/24 dev {{ _vip_iface }}
+  } 
+}

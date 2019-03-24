@@ -1,0 +1,31 @@
+---
+- hosts: all
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+
+  vars:
+    _hosts:
+      - "10.0.1.1 lb0.local"
+      - "10.0.1.2 lb1.local"
+      - "10.0.1.10 consul-server0.local"
+      - "10.0.1.11 consul-server1.local"
+      - "10.0.1.12 consul-server2.local"
+      - "10.0.1.20 consul-client0.local"
+      - "10.0.1.21 consul-client1.local"
+
+  tasks:
+    - name: base packages
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - iptables-persistent
+        - unzip
+
+    - name: setup /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ item }}"
+      loop: "{{ _hosts }}"

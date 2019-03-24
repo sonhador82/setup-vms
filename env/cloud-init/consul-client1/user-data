@@ -1,0 +1,7 @@
+#cloud-config
+password: 123456
+chpasswd: { expire: False }
+ssh_pwauth: True
+
+ssh_authorized_keys:
+ - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCs1FGlRPtZg3CHS9y1xBNyGTv3m1CIX03hu2qoCjcx3U9vJ+AZZn9h57t9GWbFqXgHQaMiBIgKEWFWyqO/GyOs1+l4KpJvQCWHz6j19vYnCtZlMEZvCoNpDGVEC25nRljDMImbYSq1npfnNRtVZ+3FyDpyfr8PAp6GVA2Rn520RshdyM++7Qmy3PvppRyIAekuTOD31zRtwx2sPtZGTWGCv+jDD9/F9sWpK3/1epMHhNnysf2DlNbNnkS20JD+173Set5kauZRjguPBeB8Q2TKVoZLlPNCvbflR8tQGpSStoH8+s1mUB017s3YK8gi1KifrbYdfli5PKWLnK+AM+zL sonhador@debian

@@ -1,0 +1,57 @@
+---
+- hosts: 127.0.0.1
+  gather_facts: no
+  connection: local
+
+  vars:
+    _nodes_iface: ens3
+    _nodes_ipprefix: 24
+    _nodes_gateway: 10.0.1.40
+    _nodes_info:
+      - { _hostname: 'lb0', ip: '10.0.1.1' }
+      - { _hostname: 'lb1', ip: '10.0.1.2' }
+      - { _hostname: 'consul-server0', ip: '10.0.1.10' }
+      - { _hostname: 'consul-server1', ip: '10.0.1.11' }
+      - { _hostname: 'consul-server2', ip: '10.0.1.12' }
+      - { _hostname: 'consul-client0', ip: '10.0.1.20' }
+      - { _hostname: 'consul-client1', ip: '10.0.1.21' }
+
+  tasks:
+    - name: generate ssh key
+      shell: ssh-keygen -b2048 -f $HOME/.ssh/connect_key_rsa -q -N ""
+      args:
+        creates: $HOME/.ssh/connect_key_rsa
+
+    - shell: cat $HOME/.ssh/connect_key_rsa.pub
+      register: _tmp_sshkey
+
+    - debug: var=_tmp_sshkey.stdout
+
+    - name: prep isos for vms
+      file:
+        dest: "{{ playbook_dir }}/cloud-init/{{ item._hostname }}"
+        state: directory
+      loop: "{{ _nodes_info }}"
+
+    - template:
+        src: "{{ playbook_dir }}/cloud-init/template/meta-data.j2"
+        dest: "{{ playbook_dir }}/cloud-init/{{ item._hostname }}/meta-data"
+      loop: "{{ _nodes_info }}"
+
+    - template:
+        src: "{{ playbook_dir }}/cloud-init/template/network-config.j2"
+        dest: "{{ playbook_dir }}/cloud-init/{{ item._hostname }}/network-config"
+      loop: "{{ _nodes_info }}"
+
+    - template:
+        src: "{{ playbook_dir }}/cloud-init/template/user-data.j2"
+        dest: "{{ playbook_dir }}/cloud-init/{{ item._hostname }}/user-data"
+      loop: "{{ _nodes_info }}"
+
+    - name: prep isos
+      shell: >
+        genisoimage -output {{ playbook_dir }}/tmp/{{ item._hostname }}-config.iso -volid cidata -joliet -rock
+        {{ playbook_dir }}/cloud-init/{{ item._hostname }}/user-data
+        {{ playbook_dir }}/cloud-init/{{ item._hostname }}/meta-data
+        {{ playbook_dir }}/cloud-init/{{ item._hostname }}/network-config
+      loop: "{{ _nodes_info }}"

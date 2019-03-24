@@ -1,0 +1,21 @@
+[lbs]
+lb-0 ansible_host="10.0.1.1" ip1_role="master" ip2_role="backup"
+lb-1 ansible_host="10.0.1.2" ip1_role="backup" ip2_role="master"
+
+[consul-servers]
+consul-server0 ansible_host="10.0.1.10"
+consul-server1 ansible_host="10.0.1.11"
+consul-server2 ansible_host="10.0.1.12"
+
+[consul-agents]
+consul-client0 ansible_host="10.0.1.20"
+consul-client1 ansible_host="10.0.1.21"
+
+[testcase:children]
+lbs
+consul-servers
+consul-agents
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+
