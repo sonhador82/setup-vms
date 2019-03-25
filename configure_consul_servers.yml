@@ -1,0 +1,29 @@
+---
+- hosts: consul-servers
+  gather_facts: yes
+  remote_user: ubuntu
+  become: yes
+
+  vars:
+    _consul_dc: test-dc
+    _consul_nodes:
+      - consul-server0.local
+      - consul-server1.local
+      - consul-server2.local
+
+  tasks:
+    - name: prep consul config
+      template:
+        src: "{{ playbook_dir }}/config/consul_server_template.json.j2"
+        dest: /etc/consul.d/consul.json
+
+    - service:
+        name: consul
+        state: restarted
+        enabled: yes
+
+
+# Run the following:
+# -m pkttype --pkt-type multicast
+#https://www.consul.io/docs/install/ports.html
+

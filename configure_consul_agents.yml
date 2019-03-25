@@ -1,0 +1,56 @@
+---
+- hosts: consul-agents
+  gather_facts: yes
+  remote_user: ubuntu
+  become: yes
+
+  vars:
+    _consul_dc: test-dc
+    _consul_nodes:
+      - consul-server0.local
+      - consul-server1.local
+      - consul-server2.local
+    _check_redis: |
+      #!/bin/bash
+      RESP=$(redis-cli -h 127.0.0.1 -p 6379 PING)
+      if [ "$RESP" == "PONG" ]; then
+        echo "OK";exit 0
+      fi
+      exit 2
+
+
+  tasks:
+    - name: prep consul config
+      template:
+        src: "{{ playbook_dir }}/config/consul_client_template.json.j2"
+        dest: /etc/consul.d/consul.json
+
+    - template:
+        src: "{{ playbook_dir }}/config/redis_service.json"
+        dest: /etc/consul.d/redis_service.json
+
+    - name: prep redis instances
+      apt:
+        name: redis-server
+        state: latest
+    - copy:
+        src: "{{ playbook_dir }}/config/redis.conf"
+        dest: /etc/redis/redis.conf
+
+    - copy:
+        content: "{{ _check_redis }}"
+        dest: /opt/bin/check_redis.sh
+        mode: 0755
+
+    - service:
+        name: consul
+        state: restarted
+        enabled: yes
+
+
+
+
+# Run the following:
+# -m pkttype --pkt-type multicast
+#https://www.consul.io/docs/install/ports.html
+

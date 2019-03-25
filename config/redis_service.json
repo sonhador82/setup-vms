@@ -1,0 +1,14 @@
+{
+  "service": {
+    "name": "redis",
+    "tags": ["{{ redis_name }}"],
+    "address": "",
+    "port": 6379,
+    "checks": [
+      {
+        "args": ["/opt/bin/check_redis.sh"],
+        "interval": "5s"
+      }
+    ]
+  }
+}

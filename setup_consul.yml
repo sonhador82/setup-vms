@@ -1,5 +1,5 @@
 ---
-- hosts: consul-servers
+- hosts: consul-servers,consul-agents
   gather_facts: yes
   remote_user: ubuntu
   become: yes
@@ -47,46 +47,7 @@
         src: "{{ playbook_dir }}/tmp/consul.zip"
         dest: /opt/bin
 
-    - name: prep consul config
-      template:
-        src: "{{ playbook_dir }}/config/consul_template.json.j2"
-        dest: /etc/consul.d/consul.json
-#
-#
-#
-#/etc/systemd/system/consul.service
-#
-#[Unit]
-#Description=Consul Service Discovery Agent
-#Documentation=https://www.consul.io/
-#After=network-online.target
-#Wants=network-online.target
-#
-#[Service]
-#Type=simple
-#User=consul
-#Group=consul
-#ExecStart=/usr/local/bin/consul agent -server -ui \
-#	-advertise=192.168.18.40 \
-#	-bind=192.168.18.40 \
-#	-data-dir=/var/lib/consul \
-#	-node=consul-01 \
-#	-config-dir=/etc/consul.d
-#
-#ExecReload=/bin/kill -HUP $MAINPID
-#KillSignal=SIGINT
-#TimeoutStopSec=5
-#Restart=on-failure
-#SyslogIdentifier=consul
-#
-#[Install]
-#WantedBy=multi-user.target
-#
-#
-#https://computingforgeeks.com/how-to-install-consul-cluster-18-04-lts/
-#
-#https://gist.github.com/yunano/c27eb679a29ab70178ca
-# Run the following:
-# -m pkttype --pkt-type multicast
-#https://www.consul.io/docs/install/ports.html
-
+    - name: prep system start script
+      copy:
+        src: "{{ playbook_dir }}/config/consul.service"
+        dest: /etc/systemd/system/consul.service

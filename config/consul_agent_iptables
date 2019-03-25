@@ -1,0 +1,20 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+:CUSTOM - [0:0]
+-A INPUT -j CUSTOM
+-A CUSTOM -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A CUSTOM -i lo -j ACCEPT
+-A CUSTOM -p tcp -m tcp --dport 22 -j ACCEPT
+-A CUSTOM -p tcp -m tcp --dport 6379 -j ACCEPT
+#server rpc
+-A CUSTOM -p tcp -m tcp --dport 8300 -j ACCEPT
+
+#gossip
+-A CUSTOM -p tcp -m tcp --dport 8301 -j ACCEPT
+-A CUSTOM -p udp -m udp --dport 8301 -j ACCEPT
+-A CUSTOM -p icmp -m icmp --icmp-type 8 -j ACCEPT
+-A CUSTOM -p tcp -m tcp ! --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j DROP
+COMMIT
+
