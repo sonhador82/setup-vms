@@ -10,14 +10,6 @@
       - consul-server0.local
       - consul-server1.local
       - consul-server2.local
-    _check_redis: |
-      #!/bin/bash
-      RESP=$(redis-cli -h 127.0.0.1 -p 6379 PING)
-      if [ "$RESP" == "PONG" ]; then
-        echo "OK";exit 0
-      fi
-      exit 2
-
 
   tasks:
     - name: prep consul config
@@ -31,15 +23,26 @@
 
     - name: prep redis instances
       apt:
-        name: redis-server
+        name: "{{ item }}"
         state: latest
+      loop:
+        - redis-server
+        - python3-pip
+
+    - pip:
+        name: "{{ item }}"
+        executable: pip3
+      loop:
+        - redis
+        - ifaddr
+
     - copy:
         src: "{{ playbook_dir }}/config/redis.conf"
         dest: /etc/redis/redis.conf
 
     - copy:
-        content: "{{ _check_redis }}"
-        dest: /opt/bin/check_redis.sh
+        src: "{{ playbook_dir }}/config/check_redis.py"
+        dest: /opt/bin/check_redis.py
         mode: 0755
 
     - service:
