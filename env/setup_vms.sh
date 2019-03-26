@@ -1,12 +1,5 @@
 #!/bin/bash
 
-
-# добавиьт проверку на флажок виртаулизации и нестинга
-# curl presents
-# libvirt virsh openssl 
-# добавить qemu: system в дефолтный connector
-
-#network 10.0.0.1
 BASE_DIR=$(dirname $(realpath $0))
 if [ ! -d $BASE_DIR/tmp ]; then mkdir $BASE_DIR/tmp; fi
 
@@ -50,8 +43,8 @@ setup_vms_consul_agents() {
 }
 
 prepare
-setup_virt_network
+#setup_virt_network
 setup_virt_pool
-setup_vms_nginx
-setup_vms_consul_server
-setup_vms_consul_agents
+#setup_vms_nginx
+#setup_vms_consul_server
+#setup_vms_consul_agents

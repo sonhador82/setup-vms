@@ -48,6 +48,10 @@
         dest: "{{ playbook_dir }}/cloud-init/{{ item._hostname }}/user-data"
       loop: "{{ _nodes_info }}"
 
+    - file:
+        dest: "{{ playbook_dir }}/tmp"
+        state: directory
+        
     - name: prep isos
       shell: >
         genisoimage -output {{ playbook_dir }}/tmp/{{ item._hostname }}-config.iso -volid cidata -joliet -rock
