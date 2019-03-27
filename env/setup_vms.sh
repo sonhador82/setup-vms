@@ -43,8 +43,8 @@ setup_vms_consul_agents() {
 }
 
 prepare
-#setup_virt_network
+setup_virt_network
 setup_virt_pool
-#setup_vms_nginx
+setup_vms_nginx
 #setup_vms_consul_server
 #setup_vms_consul_agents
