@@ -19,3 +19,13 @@
       template:
         src: "{{ playbook_dir }}/config/keepalived.conf.j2"
         dest: /etc/keepalived/keepalived.conf
+
+    - service:
+        name: keepalived
+        state: restarted
+
+    - name: setup iptables
+      copy:
+        src: "{{ playbook_dir }}/config/lbs_iptables"
+        dest: /etc/iptables/rules.v4
+    - shell: /usr/sbin/netfilter-persistent restart

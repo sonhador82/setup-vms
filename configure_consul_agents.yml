@@ -50,10 +50,12 @@
         state: restarted
         enabled: yes
 
+    - service:
+        name: redis-server
+        state: restarted
 
-
-
-# Run the following:
-# -m pkttype --pkt-type multicast
-#https://www.consul.io/docs/install/ports.html
-
+    - name: setup iptables
+      copy:
+        src: "{{ playbook_dir }}/config/consul_agent_iptables"
+        dest: /etc/iptables/rules.v4
+    - shell: /usr/sbin/netfilter-persistent restart

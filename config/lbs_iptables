@@ -7,11 +7,11 @@
 -A INPUT -j CUSTOM
 -A CUSTOM -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A CUSTOM -i lo -j ACCEPT
--A CUSTOM -m pkttype --pkt-type multicast -j ACCEPT
+-A CUSTOM -s 10.0.1.1 -m pkttype --pkt-type multicast -j ACCEPT
+-A CUSTOM -s 10.0.1.2 -m pkttype --pkt-type multicast -j ACCEPT
 -A CUSTOM -p tcp -m tcp --dport 22 -j ACCEPT
 -A CUSTOM -p tcp -m tcp --dport 80 -j ACCEPT
 -A CUSTOM -p tcp -m tcp --dport 443 -j ACCEPT
 -A CUSTOM -p icmp -m icmp --icmp-type 8 -j ACCEPT
 -A CUSTOM -p tcp -m tcp ! --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j DROP
 COMMIT
-

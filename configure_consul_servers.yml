@@ -22,8 +22,8 @@
         state: restarted
         enabled: yes
 
-
-# Run the following:
-# -m pkttype --pkt-type multicast
-#https://www.consul.io/docs/install/ports.html
-
+    - name: setup iptables
+      copy:
+        src: "{{ playbook_dir }}/config/consul_server_iptables"
+        dest: /etc/iptables/rules.v4
+    - shell: /usr/sbin/netfilter-persistent restart

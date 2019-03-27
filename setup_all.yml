@@ -15,6 +15,17 @@
       - "10.0.1.21 consul-client1.local"
 
   tasks:
+    - name: setup resolv.conf
+      lineinfile:
+        path: /etc/resolv.conf
+        line: "nameserver 8.8.8.8"
+
+    - name: setup /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ item }}"
+      loop: "{{ _hosts }}"
+
     - name: base packages
       apt:
         name: "{{ item }}"
@@ -23,9 +34,3 @@
       with_items:
         - iptables-persistent
         - unzip
-
-    - name: setup /etc/hosts
-      lineinfile:
-        path: /etc/hosts
-        line: "{{ item }}"
-      loop: "{{ _hosts }}"
