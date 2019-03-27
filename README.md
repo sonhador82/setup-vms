@@ -8,7 +8,7 @@
 по-очередно запустить следующие плейбуки
 ```bash
 cd /test_case/setup_vms
-source source /test_case/setup-vms/venv/ansible-2.6/activate
+source /test_case/setup-vms/venv/ansible-2.6/activate
 
 # общие настройки для всех вм-ок
 ansible-playbook ./setup_all.yml
